@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ci-cd-demo.fullname" . }}
+  labels:
+    {{- include "ci-cd-demo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "ci-cd-demo.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "ci-cd-demo.name" . }}
+    spec:
+      containers:
+        - name: ci-cd-demo
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          env:
+            - name: ENVIRONMENT
+              value: "production"
+            - name: APP_VERSION
+              value: "1.0.0"
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
