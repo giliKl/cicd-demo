@@ -34,17 +34,18 @@ jobs:
               with:
                 registry: ghcr.io
                 username: ${{ github.actor }}
-                password: ${{ secrets.GITHUB_TOKEN }}
+                password: ${{ secrets.IMAGE_PUSH_TOKEN }}
             - name: Extract metadata for Docker
               id: meta
               uses: docker/metadata-action@v3
               with:
-                images: ${{ghcr.io}}/${{github.repository}}
+                images: ghcr.io/${{github.repository}}
             - name: Build and push
               uses: docker/build-push-action@v6
               with:
                 context: .
                 push: true
-                tags: ghcr.io/${{github.repository}}:latest
+                tags: ${{ steps.meta.outputs.tags }}
+                labels: ${{ steps.meta.outputs.labels }}
 
 
